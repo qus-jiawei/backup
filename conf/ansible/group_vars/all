@@ -1,0 +1,104 @@
+# Defaults to the first ethernet interface. Change this to:
+#
+#  iface: eth1
+#
+# ...to override.
+#
+ansible_ssh_port: 9922
+ansible_sudo_pass: just4test
+
+auto_nginx_enabled: true
+local_repo_enabled: true
+nginx_root: /usr/share/nginx/html
+
+hadoop_conf_dir: /etc/hadoop/conf
+hdfs_home: /var/lib/hadoop-hdfs
+hadoop:
+    
+#Variables for <core-site_xml> - common
+    
+    net_topology_script_file_name: ""
+    nameservice_id: mycluster
+    fs_default_FS_port: 50900
+
+#Variables for <hdfs-site_xml>     
+    
+    dfs_namenode_http_address_port: 50070
+    dfs_namenode_https_address_port: 50470
+    dfs_include_hosts: []
+    dfs_exclude_hosts: []
+
+    dfs_ha_fencing_methods: "sshfence(hdfs:9922)"
+    dfs_ha_fencing_ssh_private-key-files: "/var/lib/hadoop-hdfs/.ssh/id_rsa"
+
+    dfs_permissions_superusergroup: hdfs
+    dfs_namenode_name_dir: 
+       - /uhp/namedir1/
+       - /uhp/namedir2/
+    dfs_replication: 3
+    dfs_blocksize: 134217728
+    dfs_datanode_address_port: 50010
+    dfs_datanode_http_address_port: 50075
+    dfs_datanode_ipc_address_port:  50020
+    dfs_datanode_failed_volumes_tolerated: 1
+    dfs_datanode_du_reserved: 5368709120
+    
+    dfs_ha_zkfc_port: 8019
+    qjournal_port: 8485  
+    qjournal_http_port: 8480 
+    dfs_journalnode_edits_dir: /uhp/journaldir/
+    zookeeper_clientport: 2181
+    zookeeper_leader_port: 2888
+    zookeeper_election_port: 3888
+
+#Variables for <mapred-site_xml> - common
+    mapreduce_shuffle_port: 8080
+    mapreduce_jobhistory_port: 50120
+    mapreduce_jobhistory_webapp_port: 50888
+    yarn_app_mapreduce_am_command-opts: " -Xmx400m "
+    yarn_app_mapreduce_am_resource_mb: 640
+    mapreduce_map_java_opts: " -Xmx400m "
+    mapreduce_map_memort_mb: 640
+    mapreduce_reduce_java_opts: " -Xmx400m "
+    mapreduce_reduce_memory_mb: 640
+    mapreduce_admin_map_child_java_opts: " -Dclient.encoding.override=UTF-8 -Dfile.encoding=UTF-8 -Duser.language=zh -Duser.region=CN "
+    mapreduce.admin.reduce.child.java.opts: " -Dclient.encoding.override=UTF-8 -Dfile.encoding=UTF-8 -Duser.language=zh -Duser.region=CN "
+
+#Variables for <yarn-site_xml> 
+
+    yarn_application_classpath:
+      - $HADOOP_CONF_DIR
+      - $HADOOP_COMMON_HOME/*
+      - $HADOOP_COMMON_HOME/lib/*
+      - $HADOOP_HDFS_HOME/*
+      - $HADOOP_HDFS_HOME/lib/*
+      - $HADOOP_MAPRED_HOME/*
+      - $HADOOP_MAPRED_HOME/lib/*
+      - $YARN_HOME/*
+      - $YARN_HOME/lib/*
+    yarn_nodes_exclude_hosts: []
+    yarn_nodes_include_hosts: []
+    yarn_rm_port: 50040
+    yarn_rm_admin_port: 50141
+    yarn_rm_scheduler_port: 50030
+    yarn_rm_resource-tracker_port: 50025
+    yarn_rm_webapp_port: 50088
+    yarn_nm_webapp_port: 50088
+    yarn_nm_port: 50841
+    yarn_nm_localizer_port: 50840
+    yarn_nm_remote-app-log-dir: /user
+    yarn_nm_remote-app-log-dir-suffix: app-logs
+    yarn_nm_resource_memory-mb: 1024
+
+#special Variables should be define in host_vars or group_vars
+
+dfs_datanode_data_dir: 
+    - /uhp/all_data_dir1
+    - /uhp/all_data_dir2
+yarn_nm_local_dirs: 
+    - /uhp/all_local_dir1
+    - /uhp/all_local_dir2
+yarn_nm_log_dirs: 
+    - /uhp/all_log_dir1
+    - /uhp/all_log_dir2
+

@@ -1,0 +1,4 @@
+
+- hosts: all
+  tasks
+  - include: roles/local_repo/tasks/depoly_repo.yml

@@ -1,0 +1,5 @@
+
+
+- name: depoly the local repo
+  template: src={{repo_name}}.j2 dest=/etc/yum.repos.d/
+  when: local_repo_enabled

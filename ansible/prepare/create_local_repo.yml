@@ -1,0 +1,4 @@
+
+- hosts: LOCALREPO
+  roles:
+  - local_repo

@@ -1,0 +1,6 @@
+
+- name: start datanode
+  sudo: yes
+  service: name=hadoop-hdfs-datanode state=started
+
+

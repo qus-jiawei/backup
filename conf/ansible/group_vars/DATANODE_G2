@@ -1,0 +1,6 @@
+---
+
+dfs_datanode_data_dir:
+  - /uhp/datadir_group2
+  - /uhp/datadir_group2_2
+  

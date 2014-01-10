@@ -1,0 +1,13 @@
+---
+# Playbook for  history server servers
+
+- name: Install the history server packages
+  yum: name={{item}} state=installed
+  with_items: 
+   - hadoop-mapreduce-historyserver
+
+- name: change the start user
+  sudo: yes
+  file: path={{item}} owner=hdfs group=hdfs state=directory
+  with_items: hadoop.dfs_namenode_name_dir 
+
