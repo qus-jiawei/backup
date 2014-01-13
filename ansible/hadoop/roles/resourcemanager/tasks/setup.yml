@@ -2,6 +2,7 @@
 # Playbook for  Hadoop resource manager
 
 - name: Install the hadoop yarn resourcemanager
+  sudo: yes
   yum: name={{item}} state=installed
   with_items: 
    - hadoop-yarn-resourcemanager

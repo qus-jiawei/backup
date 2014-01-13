@@ -2,6 +2,7 @@
 # Playbook for  Hadoop master servers
 
 - name: Install the node manager packages
+  sudo: yes
   yum: name={{item}} state=installed
   with_items: 
    - hadoop-yarn-nodemanager

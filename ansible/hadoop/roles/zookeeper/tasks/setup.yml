@@ -3,7 +3,11 @@
 
 - name: Install the zookeeper files
   sudo: yes
-  yum: name=zookeeper-server state=installed
+  yum: name={{item}} state=installed
+  with_items:
+   - zookeeper
+   - zookeeper-server
+   - bigtop-utils
 
 - name: Copy the configuration file for zookeeper
   sudo: yes

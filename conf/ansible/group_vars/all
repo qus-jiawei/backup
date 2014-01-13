@@ -6,12 +6,19 @@
 #
 ansible_ssh_port: 9922
 ansible_sudo_pass: just4test
-
-auto_nginx_enabled: true
+#本次仓库搭建选项
+#是否使用本地仓库，将会使用CDH4的官方仓库
 local_repo_enabled: true
-nginx_root: /usr/share/nginx/html
+#如果使用本地仓库，是否需要自动安装nginx并启用
+auto_nginx_enabled: true
+#HTTP的root
+http_root: /usr/share/nginx/html
+#http服务器端口，用于生产本地仓库的配置文件和修改nginx的配置文件
+http_port: 60000
 
+#以下是hadoop相关配置
 hadoop_conf_dir: /etc/hadoop/conf
+#hdfs的用户目录
 hdfs_home: /var/lib/hadoop-hdfs
 hadoop:
     
@@ -33,14 +40,14 @@ hadoop:
 
     dfs_permissions_superusergroup: hdfs
     dfs_namenode_name_dir: 
-       - /uhp/namedir1/
-       - /uhp/namedir2/
+       - /uhp/namedir/
+
     dfs_replication: 3
     dfs_blocksize: 134217728
     dfs_datanode_address_port: 50010
     dfs_datanode_http_address_port: 50075
     dfs_datanode_ipc_address_port:  50020
-    dfs_datanode_failed_volumes_tolerated: 1
+    dfs_datanode_failed_volumes_tolerated: 0
     dfs_datanode_du_reserved: 5368709120
     
     dfs_ha_zkfc_port: 8019
@@ -93,12 +100,9 @@ hadoop:
 #special Variables should be define in host_vars or group_vars
 
 dfs_datanode_data_dir: 
-    - /uhp/all_data_dir1
-    - /uhp/all_data_dir2
+    - /uhp/all_data_dir
 yarn_nm_local_dirs: 
-    - /uhp/all_local_dir1
-    - /uhp/all_local_dir2
+    - /uhp/all_local_dir
 yarn_nm_log_dirs: 
-    - /uhp/all_log_dir1
-    - /uhp/all_log_dir2
+    - /uhp/all_log_dir
 

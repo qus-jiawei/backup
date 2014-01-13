@@ -1,4 +1,8 @@
 
 - hosts: LOCALREPO
-  roles:
-  - local_repo
+  tasks:
+  - { include: 'roles/local_repo/tasks/setup.yml' , repo_name : 'cloudera-cdh4' }
+
+
+
+  #- { include: 'roles/local_repo/tasks/setup.yml' , repo_name : 'cloudera-gplextras4' } 

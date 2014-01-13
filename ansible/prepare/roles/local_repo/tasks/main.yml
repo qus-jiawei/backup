@@ -1,26 +1,5 @@
 
-
-- name: copy the yum file
-  sudo: yes
-  copy: src={{repo_file}} dest=/etc/yum.repos.d/
-
-- name: install createrepo
-  yum: name={{item}} stats=installed
+- include: setup.yml
   with_items:
-  - yum-utils
-  - createrepo
-
-
-- name: mkdir temp file
-  file: path=/tmp/ansible/repo state=directory
-
-- name: download the package
-  shell: cd /tmp/ansible/repo/ ;  reposync -r {{repo_name}} ; createrepo {{repo_name}}
-
-
-- include: nginx.yml
-  when: auto_nginx_enabled
-
-- name: move the file to http root
-  shell: mv /tmp/ansible/repo/{{repo_name}} {{http_root}}
-
+  - { repo_name:'cloudera-cdh4' , repo_file: 'cloudera-cdh4.repo' }
+  - { repo_name:'cloudera-gplextras' ,  repo_file: 'cloudera-gplextras.repo' }

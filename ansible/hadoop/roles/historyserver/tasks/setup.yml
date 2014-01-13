@@ -2,6 +2,7 @@
 # Playbook for  history server servers
 
 - name: Install the history server packages
+  sudo: yes
   yum: name={{item}} state=installed
   with_items: 
    - hadoop-mapreduce-historyserver

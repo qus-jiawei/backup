@@ -1,9 +1,3 @@
----
-# 部署系统环境的 playbook
-#
-- hosts: ZOOKEEPER
-  roles:
-  - zookeeper
 
 - hosts: QJM
   tasks:

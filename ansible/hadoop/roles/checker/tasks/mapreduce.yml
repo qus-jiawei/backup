@@ -7,7 +7,7 @@
 - name: copy the test data
   copy: src=hadoop-example.jar dest=/tmp/ansible/download/hadoop-example.jar
 
-- name:  test hdfs
+- name:  test mapreduce pi job
   sudo: yes
   sudo_user: hdfs
   shell: hadoop jar /tmp/ansible/download/hadoop-example.jar pi 3 3

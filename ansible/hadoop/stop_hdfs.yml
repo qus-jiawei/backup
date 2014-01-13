@@ -8,7 +8,7 @@
   tasks:
   - include: roles/namenode/tasks/stop.yml
 
-#- hosts: DATANODE
-#  tasks:
-#  - include: roles/datanode/tasks/stop.yml
+- hosts: DATANODE
+  tasks:
+  - include: roles/datanode/tasks/stop.yml
 

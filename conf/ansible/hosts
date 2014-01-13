@@ -19,8 +19,8 @@ NODEMANAGER
 HISTORYSERVER
 
 [HBASE_ALL:children]
-MASTER
-BACKMASTER
+HBASEMASTER
+BACKUPMASTER
 REGIONSERVER
 
 [CLIENT]
@@ -51,10 +51,10 @@ hadoop[2:5]
 [HISTORYSERVER]
 hadoop2 
 
-[MASTER]
+[HBASEMASTER]
 hadoop2  
 
-[BACKMASTER]
+[BACKUPMASTER]
 hadoop3  
 
 [REGIONSERVER]
@@ -64,14 +64,8 @@ hadoop5
 [HIVESERVER]
 hadoop2
 
-#below is for config
-[DATANODE_G1]
-hadoop2
-hadoop4
-
-[DATANODE_G2]
-hadoop3
-hadoop5
-
 [LOCALREPO]
-hadoop2
+hadoop1
+
+#below is for config
+

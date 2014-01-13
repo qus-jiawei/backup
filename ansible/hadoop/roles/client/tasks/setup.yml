@@ -7,5 +7,6 @@
    - hadoop
    - hadoop-client
    - hadoop-lzo-cdh4
+   - bigtop-utils
 
 
