@@ -1,0 +1,7 @@
+
+- name: start hadoop-yarn-resourcemanager 
+  sudo: yes
+  service: name=hadoop-yarn-resourcemanager state=started
+
+
+

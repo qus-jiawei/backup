@@ -1,0 +1,16 @@
+tickTime=2000
+initLimit=10
+syncLimit=2
+dataDir=/var/lib/zookeeper
+dataLogDir=/var/lib/zookeeper
+clientPort={{ hadoop['zookeeper_clientport'] }}
+maxClientCnxns=60
+minSessionTimeout=4000
+maxSessionTimeout=60000
+autopurge.purgeInterval=24
+autopurge.snapRetainCount=5
+{% for host in groups['ZOOKEEPER'] %}
+server.{{hostvars[host].zoo_id}}={{host}}:{{hadoop['zookeeper_leader_port']}}:{{hadoop['zookeeper_election_port']}}
+{% endfor %}
+
+

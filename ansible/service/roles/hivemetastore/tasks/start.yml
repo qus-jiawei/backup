@@ -1,0 +1,11 @@
+
+- name: start hive metastore
+  sudo: yes
+  script: start.sh
+
+#bug吗？ 不知道为什么不能启动
+#- name: start hive metastore
+#  sudo: yes
+#  service: name=hive-metastore state=started
+#  environment:
+#    PORT: hive['hive_metastore_port']

@@ -1,0 +1,3 @@
+- name: start qjm
+  sudo: yes
+  service: name=hadoop-hdfs-journalnode state=started

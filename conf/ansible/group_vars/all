@@ -14,12 +14,33 @@ auto_nginx_enabled: true
 #HTTP的root
 http_root: /usr/share/nginx/html
 #http服务器端口，用于生产本地仓库的配置文件和修改nginx的配置文件
-http_port: 60000
+http_port: 630000
 
 #以下是hadoop相关配置
 hadoop_conf_dir: /etc/hadoop/conf
 #hdfs的用户目录
 hdfs_home: /var/lib/hadoop-hdfs
+
+#以下是启动的java参数
+#自动添加到所有服务启动的参数
+SERVER_OPTS: " -Dcom.sun.management.jmxremote -Djava.net.preferIPv4Stack=true -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:-CMSConcurrentMTEnabled -XX:CMSInitiatingOccupancyFraction=70 -XX:+CMSParallelRemarkEnabled -XX:+DisableExplicitGC -XX:+UseCMSCompactAtFullCollection -Dclient.encoding.override=UTF-8 -Dfile.encoding=UTF-8 -Duser.language=zh -Duser.region=CN" 
+
+HADOOP_NAMENODE_OPTS: " -Xmx1024m -Dhdfs.audit.logger=INFO,RFAAUDIT -Dsecurity.audit.logger=INFO,RFAS "
+HADOOP_SECONDARYNAMENODE_OPTS: " "
+HADOOP_BALANCER_OPTS: " "
+HADOOP_DATANODE_OPTS: " -Xmx1024m "
+HADOOP_BALANCER_OPTSa: " -Xmx1024m"
+HADOOP_CLIENT_OPTS: " -Xmx256m "
+YARN_RESOURCEMANAGER_OPTS: " -Xmx1024m "
+YARN_NODEMANAGER_OPTS: " -Xmx1024m "
+HADOOP_JOBTRACKER_OPTS: " "
+
+HBASE_MASTER_OPTS: " -Xmx256m "
+HBASE_REGIONSERVER_OPTS: " -Xmx1024m "
+HBASE_THRIFT_OPTS: " -Xmx256m "
+
+#以下是配置文件的配置
+
 hadoop:
     
 #Variables for <core-site_xml> - common
@@ -73,6 +94,9 @@ hadoop:
 
 #Variables for <yarn-site_xml> 
 
+
+    mapreduce_jobhistory_intermediate-done-dir: /user/history
+    mapreduce_jobhistory_done-dir: /user/history
     yarn_application_classpath:
       - $HADOOP_CONF_DIR
       - $HADOOP_COMMON_HOME/*
@@ -93,7 +117,7 @@ hadoop:
     yarn_nm_webapp_port: 50088
     yarn_nm_port: 50841
     yarn_nm_localizer_port: 50840
-    yarn_nm_remote-app-log-dir: /user
+    yarn_nm_remote-app-log-dir: /var/log/hadoop-yarn
     yarn_nm_remote-app-log-dir-suffix: app-logs
     yarn_nm_resource_memory-mb: 1024
 
@@ -106,3 +130,32 @@ yarn_nm_local_dirs:
 yarn_nm_log_dirs: 
     - /uhp/all_log_dir
 
+
+hbase:
+
+    #默认前缀是hdfs://mycluster
+    hbase_rootdir: /hbase
+    hbase_master_port: 50600
+    hbase_master_info_port: 50610
+    hbase_master_handler_count: 25
+    hbase_resigionserver_port: 50620
+    hbase_resigionserver_info_port: 50630
+    hbase_regionserver_handler_count: 10
+
+
+hive:
+    
+    mysql_host: hadoop1
+    mysql_port: 3306
+    mysql_database: uhp_hive
+    mysql_user: uhp
+    mysql_passwd: "DFAUHFUH734B3BDJFS"
+    hive_metastore_warehouse_dir: /user/hive/warehouse
+    hive_metastore_port: 19083
+    hive_semantic_analyzer_hook: ""
+    hive_support_concurrency: false
+    
+    hive_server_thrift_port: 59200
+    hive_server2_thrift_port: 59300
+    #NONE LDAP KERBEROS
+    hive_server2_authentication: NONE

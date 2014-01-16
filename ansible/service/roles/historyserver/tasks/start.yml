@@ -1,0 +1,6 @@
+
+- name: start mapreduce-history
+  sudo: yes
+  script: start.sh "-p {{hive['hive_server_thrift_port']}}"
+
+

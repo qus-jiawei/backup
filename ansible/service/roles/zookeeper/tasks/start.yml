@@ -1,0 +1,7 @@
+
+- name: start zookeeper
+  sudo: yes
+  service: name=zookeeper-server state=started
+
+
+
