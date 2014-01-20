@@ -1,0 +1,10 @@
+logging = "debug"
+
+bind_host = "0.0.0.0"
+bind_port = 8080
+
+connection = "mysql://root:uvp@jockey/uvpkeeper"
+
+logfile = "uvpkeeper.log"
+log_dir = "/home/zouhc/uvp/log/uvpkeeper"
+logformatter = "(%(name)s): %(asctime)s %(levelname)s %(module)s %(funcName)s %(message)s"
