@@ -1,6 +1,0 @@
-
-- hosts: NAMENODE
-  tasks:
-  - include: roles/conf/tasks/hadoop.yml
-  - include: roles/conf/tasks/namenode.yml
-  - include: roles/conf/tasks/resourcemanager.yml

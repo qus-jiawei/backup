@@ -1,4 +1,4 @@
 #!python
 
 
-connection = "sqlite:////home/qiujw/uhp/db/sqlite.db"
+connection = "sqlite:///D:\github\uhp\db\sqlite.db"

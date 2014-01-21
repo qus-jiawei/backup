@@ -9,6 +9,7 @@ from tornado.options import define, options
 
 from controller import *
 from controller.service import ServiceHandler
+from controller.debug import DebugHandler
 from sqlalchemy import create_engine
 from etc import config
 
@@ -49,7 +50,7 @@ class Application(tornado.web.Application):
             (r"/", IndexHandler),
             (r"/login", LoginHandler),
             (r"/home", HomeHandler),
-            (r"/service/([0-9]+)", ServiceHandler),
+            (r"/debug", DebugHandler),
             (r"/logout", AuthLogoutHandler),
             (r'/statics/(.*)', tornado.web.StaticFileHandler, {'path':os.path.join(os.path.dirname(__file__), "statics")})
         ]

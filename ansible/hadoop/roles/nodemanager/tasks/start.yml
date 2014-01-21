@@ -1,7 +1,0 @@
-
-- name: start hadoop-yarn-nodemanager 
-  sudo: yes
-  service: name=hadoop-yarn-nodemanager state=started
-
-
-

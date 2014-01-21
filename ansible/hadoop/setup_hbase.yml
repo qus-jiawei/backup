@@ -1,4 +1,0 @@
-
-
-- hosts: HBASEMASTER
-  roles: hbasemaster

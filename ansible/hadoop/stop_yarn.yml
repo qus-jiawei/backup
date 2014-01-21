@@ -1,8 +1,0 @@
-
-- hosts: RESOURCEMANAGER
-  tasks:
-  - include: roles/resourcemanager/tasks/stop.yml
-
-- hosts: NODEMANAGER
-  tasks:
-  - include: roles/nodemanager/tasks/stop.yml

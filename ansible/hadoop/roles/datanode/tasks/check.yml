@@ -1,5 +1,0 @@
----
-
-- name: check weather datanode is good TODO fix this
-  shell: hostname
-  

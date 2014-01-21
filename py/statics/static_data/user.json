@@ -1,0 +1,7 @@
+{
+"user":{"name":"qus","email":"qiujw@ucweb.com"},
+"menus":[{"name":"管理员","herf":"#admin"},{"name":"用户","herf":"#user"}],
+"submenus":[{"name":"服务","herf":"#admin-service"},{"name":"机器","herf":"#admin-host"},
+{"name":"任务","herf":"#admin-task"},{"name":"历史","herf":"#admin-history"}
+]
+}

@@ -1,5 +1,0 @@
-
-- hosts: ZOOKEEPER
-  roles:
-  - zookeeper
-
