@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 
-from controller import ServiceHandler
+from controller import BaseHandler
 
-class HostHandler(BaseHandler):
+class ServiceHandler(BaseHandler):
     pass

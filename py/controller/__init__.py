@@ -3,6 +3,7 @@ import tornado
 
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import and_
+from db.user import User
 
 session = None
 
@@ -38,7 +39,7 @@ class LoginHandler(BaseHandler):
     def post(self):
         username = self.get_argument('useranme')
         password = self.get_argument('password')
-        user = self.getseesion().query(models.Users).filter(and_(models.Users.name == username, models.Users.password == password)).first()
+        user = self.getseesion().query(User).filter(and_(User.name == username, User.password == password)).first()
 
         if user:
             self.set_current_user({'name': user.name, 'password': user.password})
