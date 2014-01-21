@@ -1,7 +1,0 @@
-# -*- coding: UTF-8 -*-
-
-from controller import BaseHandler
-
-class InstanceHandler(BaseHandler):
-    def get(self, clusterid):
-        self.write("I'm the instance in cluster %s" % clusterid )
