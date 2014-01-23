@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 import os.path, logging, sys
+# homedir=os.path.join( os.getenv('UHP_HOME'),"uhpcommon");
+homedir="D:\github\uhp\uhpcommon"
+sys.path.append(homedir)
+import database
+
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
@@ -11,7 +16,7 @@ from controller import *
 from controller.service import ServiceHandler
 from controller.debug import DebugHandler
 from sqlalchemy import create_engine
-from etc import config
+
 
 access_log = logging.getLogger("tornado.access")
 app_log = logging.getLogger("tornado.application")
@@ -65,7 +70,7 @@ class Application(tornado.web.Application):
         )
         tornado.web.Application.__init__(self, handlers, **settings)
         
-        self.engine = create_engine(config.connection,echo =True)
+        self.engine = database.getEngine();
 
 
 def main(config_file):

@@ -5,9 +5,76 @@
 <title>UHP管理平台</title>
 <link rel="stylesheet" href="/statics/css/bootstrap.css" />
 <link rel="stylesheet" href="/statics/css/home.css" />
+<script type="text/javascript" src="/statics/js/vendor/jquery.js"></script>
 <script type="text/javascript" src="/statics/js/vendor/bootstrap.js"></script>
 </head>
 <body>
 	<button class="btn">haha</button>
+	<ul class="nav nav-tabs nav-stacked">
+		  <li ng-repeat="service in services">
+		 a
+		  </li>
+		</ul>
+		
+		
+	<div class="btn-group">
+	  <a class="btn dropdown-toggle" data-toggle="dropdown">
+	    Action
+	    <span class="caret"></span>
+	  </a>
+	  <ul class="dropdown-menu">
+	    <!-- dropdown menu links -->
+	  
+	 	<li ><a>b</a></li>
+	 	<li ><a>b</a></li>
+	  </ul>
+	</div>
+	<script>
+		$('.dropdown-toggle').dropdown()
+	</script>
+	
+	 <a href="" role="button" class="btn" data-toggle="modal" data-target="#myModal">查看演示</a>
+        <button type="button" class="btn" data-toggle="modal" data-target="#myModal">
+            查看演示
+        </button>
+        <button class="btn btn-primary" id="open">
+            Open
+        </button>
+ 
+        <div id="myModal" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h3>Modal Header</h3>
+            </div>
+            <div class="modal-body">
+                <p>
+                    万维网黑客联盟 www.w3hacker.com
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" data-dismiss="modal" aria-hidden="true">
+                    关闭
+                </button>
+                <button type="button" class="btn btn-primary">
+                    Save changes
+                </button>
+            </div>
+        </div>
+ 
+        <script>
+            jQuery(function($) {
+                $('#open').click(function() {
+                    $('#myModal').modal({
+                    });
+                });
+ 
+                $('#myModal').on('hidden', function() {
+                    alert('hidden');
+                })
+            });
+        </script>
+	
 </body>
 </html>

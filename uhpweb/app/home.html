@@ -17,42 +17,57 @@
 </head>
 <body>
 	<div class="container">
-		<div class="row" ng-controller="NarCtrl">
-			<div class="navbar" >
-				<div class="navbar-inner">
-					<ul class="nav" >
-						<li ng-repeat="menu in menus">
-							<a href="[[menu.herf]]">[[menu.name]]</a>
-						</li>
-					</ul>
-					<div class="pull-right">
-						<label class="hor">[[user.name]]</label>
-						<button class="btn" type="button">登出</button>
+			<div class="row" ng-controller="NarCtrl">
+				<div class="navbar" >
+					<div class="navbar-inner">
+						<ul class="nav" >
+							<li ng-repeat="menu in menus">
+								<a href="[[menu.herf]]">[[menu.name]]</a>
+							</li>
+						</ul>
+						<div class="pull-right">
+							<label class="hor">[[user.name]]</label>
+							<button class="btn" type="button">登出</button>
+						</div>
 					</div>
 				</div>
-			</div>
-			
-			<div class="btn-group">
-				<button class="btn" ng-repeat="submenu in submenus" >
-					<a herf="[[submenu.herf]]">
-						[[submenu.name]]
-					</a>
-				</button>
-			</div>
-			
-		</div>
-		
-		<div class="row">
-			<div class="span9">
-				<div class="row">	
-					<div ng-view class="reveal-animation"></div>
+				
+				<div class="btn-group">
+					<button class="btn btn-large" ng-repeat="submenu in submenus" >
+						<a href="[[submenu.href]]">
+							[[submenu.name]]
+						</a>
+					</button>
 				</div>
+				
 			</div>
-		</div>
+			
+			<div class="row" style="margin-top:30px">
+				<div ng-view class="reveal-animation"></div>
+			</div>
 	</div>
+	<!-- 全局共用HTML -->
+	<!-- 模式对话框的进度条  -->
+	<div id="progressModal" class="modal hide fade" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                &times;
+            </button>
+            <h3>工作正在执行</h3>
+        </div>
+        <div class="modal-body">
+        	<div class="progress progress-striped active">
+			  <div id="progressbar" class="bar" style="width: [[progress]]%;"></div>
+			</div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" data-dismiss="modal" ng-show="!success">返回</button>
+        	<button type="button" class="btn btn-primary" data-dismiss="modal" ng-show="success">确定</button>
+        </div>
+    </div>
 </body>
 <script type="text/javascript" src="/statics/home.js"></script>
-<script>
+<script type="text/javascript">
     angular.element(document).ready(function () {
     });
 </script>

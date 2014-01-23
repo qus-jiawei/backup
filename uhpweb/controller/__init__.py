@@ -58,5 +58,5 @@ class IndexHandler(BaseHandler):
 
 class AuthLogoutHandler(BaseHandler):
     def get(self):
-        self.clear_cookie("uvp_user")
+        self.clear_cookie("user")
         self.redirect("/login")

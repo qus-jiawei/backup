@@ -1,11 +1,164 @@
 <div  ng-controller="ServiceCtrl">
-	<div class="span2">
-		<ul>
-		  <li ng-repeat="service in services">
-		  [[service.name]]</li>
-		</ul>
-	</div>
-	<div class="span7">
-		
+	
+		<h3>服务</h3>
+
+	<div class="row">
+		<div class="span2">
+			<ul class="nav nav-tabs nav-stacked">
+			  <li class="[[serviceClass(service.name)]]"  ng-click="changeService(service.name)" ng-repeat="service in services" >
+			  <a>[[service.name]]</a>
+			  </li>
+			</ul>
+		</div>
+		<div class="span8">
+			<!-- 提交action的模式对话框 -->
+			<div id="serviceActionModal" class="modal hide fade" aria-hidden="true">
+	            <div class="modal-header">
+	                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+	                    &times;
+	                </button>
+	                <h3>确认提交任务</h3>
+	            </div>
+	            <div class="modal-body">
+	                <p>
+	                   	确定要对[[getActionObject]]执行 [[todoAction]] 操作吗？
+	                </p>
+	                <p>[[instanceList()]]</p>
+	                
+	            </div>
+	            <div class="modal-footer">
+	                <button type="button" class="btn" data-dismiss="modal">取消</button>
+	                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="sendAction()" >确定</button>
+	            </div>
+	        </div>
+		        
+			<ul class="nav nav-tabs" id="serviceTab">
+			  <li class="[[tabClass('info')]]"><a ng-click="tab='info'" >服务概况</a></li>
+			  <li class="[[tabClass('instance')]]"><a ng-click="tab='instance'">运行实例</a></li>
+			  <li class="[[tabClass('confvar')]]"><a ng-click="tab='confvar'">配置变量</a></li>
+			  <li class="[[tabClass('conftem')]]"><a  ng-click="tab='conftem'">配置模板</a></li>
+			</ul>
+			 
+			<div class="tab-content">
+			  <div class="tab-pane fade [[tabClass('info','in')]] " style="height:700px;">
+			  	<!-- 下拉选择操作  -->
+			  	<div class="btn-group" style="margin-bottom:20px;margin-left:10px;">
+				  	<button class="btn drop-down-toggle" data-toggle="dropdown">选择集群操作<span class="caret"></span></button>
+				  	<ul class="dropdown-menu" >
+					  <li ng-repeat="action in actions" ng-click="readySendServiceAction(action)"><a>[[action]]</a></li>
+					</ul>
+				</div>
+			  	<h5>概况</h5>
+			  	<p>[[summary]]</p>
+			  </div>
+			  <div class="tab-pane fade [[tabClass('instance','in')]] " >
+			    <!-- 下拉选择操作  -->
+			  	<div class="btn-group" style="margin-bottom:20px;margin-left:10px;">
+				  	<button class="btn drop-down-toggle" data-toggle="dropdown" id="instance-action-button">选择操作<span class="caret"></span></button>
+				  	<ul class="dropdown-menu" >
+					  <li ng-repeat="instanceAction in instanceActions" ng-click="readySendInstanceAction(instanceAction)"><a>[[instanceAction]]</a></li>
+					</ul>
+				</div>
+				<!-- 列表 -->
+			  	<input type="text" ng-model="instanceSearchText" style="margin-bottom:20px;">
+			  	<table id="table_id" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" >
+				    <thead>
+				        <tr>
+				            <th>
+				            	<input type="checkbox" ng-model="chosenAll" title="select all" >
+				            </th>
+				            <th>名称</th>
+				            <th>角色</th>
+				            <th>机器</th>
+				            <th>机架</th>
+				            <th>状态</th>
+				        </tr>
+				    </thead>
+				    <tbody>
+				        <tr ng-repeat="instance in instances|filter:instanceSearchText">
+				            <td>
+				          		<input type="checkbox" ng-model="chosenInstance[$index]" >
+				            </td>
+				            <td>[[instance.name]]</td>
+				            <td>[[instance.role]]</td>
+				            <td>[[instance.host]]</td>
+				            <td>[[instance.rack]]</td>
+				            <td>[[instance.status]]</td>
+				        </tr>
+				    </tbody>
+				</table>	
+				
+			  </div>
+			  <!-- 配置变量页面 -->
+			  <div class="tab-pane fade [[tabClass('confvar','in')]] " >
+			  	<!-- 配置的模式对话框 -->
+				  <div id="serviceConfModal" class="modal hide fade" aria-hidden="true">
+			            <div class="modal-header">
+			                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+			                    &times;
+			                </button>
+			                <h3>修改配置</h3>
+			            </div>
+			            <div class="modal-body">
+			            	<div class="input-prepend">
+				               <span class="add-on">配置组:</span><input type="text" ng-model="nowConfVar.group">
+				            </div>
+				            <div class="input-prepend">
+				               <span class="add-on">配置名称:</span><input type="text" ng-model="nowConfVar.name">
+				            </div>
+				            <div class="input-prepend">
+				               <span class="add-on">值:</span><input type="text" ng-model="nowConfVar.value">
+				            </div>
+				            <div class="input-prepend">
+				               	<span class="add-on">类型:</span>
+								<select ng-model="nowConfVar.type">
+								  <option>string</option>
+								  <option>list</option>
+							   	</select>
+				            </div>
+				            <div class="input-prepend">
+				               <span class="add-on">注释:</span><input type="text" ng-model="nowConfVar.text">
+				            </div>
+			            </div>
+			            <div class="modal-footer">
+			                <button type="button" class="btn" data-dismiss="modal">取消</button>
+			                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveConf()" >确定</button>
+			            </div>
+			        </div>
+			  	<!-- 列表 -->
+			  	<input type="text" ng-model="confSearchText" style="margin-bottom:20px;">
+			  	<button  type="button" class="btn" ng-click="addConfVar()" style="margin-bottom:20px;">添加配置项</button>
+			  	<table id="table_id" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" >
+				    <thead>
+				        <tr>
+				            <th>配置组</th>
+				            <th>配置名称</th>
+				            <th>配置数值</th>
+				            <th>类型</th>
+				            <th>注释</th>
+				        </tr>
+				    </thead>
+				    <tbody>
+				        <tr ng-dblclick="editConfVar(var)" ng-repeat="var in confVar|filter:confSearchText">
+				            <td>[[var.group]]</td>
+				            <td>[[var.name]]</td>
+				            <td>[[var.value]]</td>
+				            <td>[[var.type]]</td>
+				            <td>[[var.text]]</td>
+				        </tr>
+				    </tbody>
+				</table>
+			  	
+			  </div>
+			  
+			  <div class="tab-pane fade [[tabClass('conftem','in')]] " >d</div>
+			</div>
+			 
+		</div>
 	</div>
 </div>
+
+
+<script>
+	$('.dropdown-toggle').dropdown();
+</script>

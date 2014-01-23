@@ -9,11 +9,14 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import sessionmaker
 from db.user import User
 import sqlite3
-from etc import config
 
+import os  
+import sys
+
+connection = "sqlite:///D:\github\uhp\db\sqlite.db"
 
 def getEngine():
-    return create_engine(config.connection, echo=True)
+    return create_engine(connection, echo=True)
 
 def getSession():
     engine =  getEngine()
@@ -22,7 +25,7 @@ def getSession():
     return session
 
 def getCursor():
-    conn = sqlite3.connect(config.connection) 
+    conn = sqlite3.connect(connection) 
     return conn.cursor()
 
 def createDB():
@@ -35,12 +38,12 @@ def dropDB():
     User.metadata.drop_all(engine)
     
 def createIndex():
-    conn = sqlite3.connect(config.connection) 
+    conn = sqlite3.connect(connection) 
     cursor = conn.cursor()
 #     cursor.execute('CREATE INDEX IF NOT EXISTS nm_happen_host ON nm(happenTime,host);');
     
 def showAll():
-    conn = sqlite3.connect(config.connection) 
+    conn = sqlite3.connect(connection) 
     cursor = conn.cursor()
     #初始化
     cursor.execute('select * from user limit 10');
