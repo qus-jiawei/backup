@@ -3,7 +3,7 @@ import tornado
 
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import and_
-from db.user import User
+from model.user import User
 
 session = None
 

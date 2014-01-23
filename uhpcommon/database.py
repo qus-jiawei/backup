@@ -7,7 +7,7 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import sessionmaker
-from db.user import User
+from model.user import User
 import sqlite3
 
 import os  
