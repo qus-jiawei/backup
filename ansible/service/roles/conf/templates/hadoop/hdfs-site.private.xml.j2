@@ -3,6 +3,6 @@
 <configuration>
   <property>
     <name>dfs.datanode.data.dir</name>
-    <value>{{dfs_datanode_data_dir| join(',') }}</value>
+    <value>{{hadoop['dfs_datanode_data_dir']| join(',') }}</value>
   </property>
 </configuration>

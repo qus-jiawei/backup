@@ -1,24 +1,23 @@
-# Defaults to the first ethernet interface. Change this to:
-#
-#  iface: eth1
-#
-# ...to override.
-#
+#登录选项
 ansible_ssh_port: 9922
 ansible_sudo_pass: just4test
-#本次仓库搭建选项
-#是否使用本地仓库，将会使用CDH4的官方仓库
-local_repo_enabled: true
+
+#本地仓库搭建选项
+#是否使用本地仓库，否则使用CDH4的官方仓库
+local_repo_enabled: false
 #如果使用本地仓库，是否需要自动安装nginx并启用
 auto_nginx_enabled: true
-#HTTP的root
+#HTTP的root,将会把下载的RPM放进这个HTTP的目录
 http_root: /usr/share/nginx/html
 #http服务器端口，用于生产本地仓库的配置文件和修改nginx的配置文件
-http_port: 630000
+http_port: 63000
+#JAVA的安装包
+java_tar: /home/qiujw/java/jdk1.6.0_45.tar.gz
+java_untar_floder: jdk1.6.0_45
 
 #以下是hadoop相关配置
 hadoop_conf_dir: /etc/hadoop/conf
-#hdfs的用户目录
+#hdfs的用户目录,NM的HDFS用户的相互信任，需要加入SHH互信
 hdfs_home: /var/lib/hadoop-hdfs
 
 #以下是启动的java参数
@@ -123,12 +122,12 @@ hadoop:
 
 #special Variables should be define in host_vars or group_vars
 
-dfs_datanode_data_dir: 
-    - /uhp/all_data_dir
-yarn_nm_local_dirs: 
-    - /uhp/all_local_dir
-yarn_nm_log_dirs: 
-    - /uhp/all_log_dir
+    dfs_datanode_data_dir: 
+        - /uhp/all_data_dir
+    yarn_nm_local_dirs: 
+        - /uhp/all_local_dir
+    yarn_nm_log_dirs: 
+        - /uhp/all_log_dir
 
 
 hbase:

@@ -3,11 +3,11 @@
 <configuration>
    <property>
     <name>yarn.nodemanager.local-dirs</name>
-    <value>{{yarn_nm_local_dirs | join(',') }}</value>
+    <value>{{hadoop['yarn_nm_local_dirs'] | join(',') }}</value>
   </property>
   <property>
     <name>yarn.nodemanager.log-dirs</name>
-    <value>{{yarn_nm_log_dirs | join(',') }}</value>
+    <value>{{hadoop['yarn_nm_log_dirs'] | join(',') }}</value>
   </property>
  </property>
 </configuration>
