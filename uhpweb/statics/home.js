@@ -31,7 +31,7 @@ uhpApp.config(['$routeProvider', "$interpolateProvider", function($routeProvider
         })
         .when('/admin-task',
         {
-            controller: 'TasksCtrl',
+            controller: 'TaskCtrl',
             templateUrl: '/statics/partials/task.html'
         })
         .otherwise({ redirectTo: '/admin-service' });
@@ -41,13 +41,14 @@ uhpApp.controller('NarCtrl',['$scope','$rootScope','$interval','$http',function(
 	$scope.user={}
 	$scope.menus={}
 	$scope.submenus={}
-	 $http({
+	$http({
 	        method: 'GET',
-	        url: '/statics/static_data/user.json'
+	        url: '/back/user'
 	    }).success(function(response, status, headers, config){
 	        $scope.menus = response["menus"];
 	        $scope.user = response["user"];
-	        $scope.submenus = response["submenus"];
+	        //TODO 判断深度连接使用adminmenus或者usermenus
+	        $scope.submenus = response["adminmenus"];
 	    }).error(function(data, status) {
 	        $scope.status = status;
 	    });
@@ -55,7 +56,7 @@ uhpApp.controller('NarCtrl',['$scope','$rootScope','$interval','$http',function(
 	//可以设置$rootScope的runningid然后调用$rootScope.beginProgress即可
 	$rootScope.beginProgress=function(){
 		if( $rootScope.runningId==null){
-			console.log("running id is undefine");
+			//console.log("running id is undefine");
 			return ;
 		}
 		$("#progressModal").modal({});
@@ -67,8 +68,6 @@ uhpApp.controller('NarCtrl',['$scope','$rootScope','$interval','$http',function(
 		
 	}
 	$rootScope.updateProgress=function(){
-		console.log("update ");
-		console.log($rootScope.progress);
 		if( $rootScope.close ) return;
 		$rootScope.progress += 10;
 		if( $rootScope.progress == 100 ){
@@ -89,16 +88,28 @@ uhpApp.controller('NarCtrl',['$scope','$rootScope','$interval','$http',function(
 	    }
 		$("#progressModal").modal('hide');
 	}
+	$rootScope.isActiveMenu=function(menu){
+		if($rootScope.menu == menu) return "active";
+		else return "";
+	}
+	$rootScope.isActiveSubmenu=function(submenu){
+		if($rootScope.submenu == submenu) return "active";
+		else return "";
+	}
+	$rootScope.jump=function(path){
+		window.location.href=path;
+	}
+	
 }])
-uhpApp.controller('ServiceCtrl',['$scope','$http',function($scope,$http){
+uhpApp.controller('ServiceCtrl',['$scope','$rootScope','$http',function($scope,$rootScope,$http){
+	$rootScope.menu="admin";
+	$rootScope.submenu="service";	
 	//初始化service的静态信息
 	 $http({
 	        method: 'GET',
-	        url: '/statics/static_data/services_info.json'
+	        url: '/back/services_info'
 	    }).success(function(response, status, headers, config){
 	    	$scope.services = response["services"];
-	    	console.log("init service");
-	    	console.log($scope.services );
 	        $scope.nowService =  $scope.services[0].name;
 	    }).error(function(data, status) {
 	        $scope.status = status;
@@ -116,8 +127,6 @@ uhpApp.controller('ServiceCtrl',['$scope','$http',function($scope,$http){
 	        if(ser.name == $scope.nowService){
         		$scope.actions = ser.actions;
         		$scope.instanceActions = ser.instanceActions;
-        		console.log("change action");
-        		console.log($scope.instanceActions);
         		break;
         	}
         }
@@ -125,19 +134,23 @@ uhpApp.controller('ServiceCtrl',['$scope','$http',function($scope,$http){
 		$scope.initInstance();
 		//初始化confvar
 		$scope.initConf();
-		
-		console.log($scope.chosenInstance);
+
 		$scope.chosenAll=false;
 		$scope.chosenInstance={};
 	}
 	
 	$scope.initInstance=function(){
+		console.log( $scope.nowService );
+		if( $scope.nowService == null || $scope.nowService==""){
+			$scope.instances = [];
+			$scope.summary = "";
+			return;
+		}
 		$http({
 	        method: 'GET',
-	        url: '/statics/static_data/service_info.json',
+	        url: '/back/service_info',
 	        params:  { "service" : $scope.nowService }
 	    }).success(function(response, status, headers, config){
-	        console.log("send http for instance");
 	        $scope.summary=$scope.nowService+" "+response['summary'];
 	        $scope.instances = response['instances'];
 	    }).error(function(data, status) {
@@ -151,9 +164,7 @@ uhpApp.controller('ServiceCtrl',['$scope','$http',function($scope,$http){
 	        url: '/statics/static_data/conf_var.json',
 	        params:  { "service" : $scope.nowService }
 	    }).success(function(response, status, headers, config){
-	        console.log("send http for confvar");
 	        $scope.confVar=response["conf"];
-	        console.log($scope.instances);
 	    }).error(function(data, status) {
 	    	alert("init service_info error");
 	    });
@@ -195,6 +206,7 @@ uhpApp.controller('ServiceCtrl',['$scope','$http',function($scope,$http){
 				}
 			}
 		}
+		console.log(list)
 		return list;
 	}
 	//提交action
@@ -203,6 +215,7 @@ uhpApp.controller('ServiceCtrl',['$scope','$http',function($scope,$http){
 			return $scope.nowService;
 		}
 		else{
+			console.log("into actionobject")
 			return "以下机器";
 		}
 	}
@@ -224,7 +237,6 @@ uhpApp.controller('ServiceCtrl',['$scope','$http',function($scope,$http){
 		}
 	}
 	$scope.sendAction=function(action){
-		console.log("send action");
 		$http({
 	        method: 'GET',
 	        url: '/statics/static_data/send_action.json',
@@ -235,7 +247,6 @@ uhpApp.controller('ServiceCtrl',['$scope','$http',function($scope,$http){
 	        		"instances" : $scope.InstanceList
 	        	}
 	    }).success(function(response, status, headers, config){
-	        console.log("send action from http");
 	        if(response["ret"]!="ok"){
 	        	alert("提交失败:"+response["msg"]);
 	        }
@@ -247,7 +258,6 @@ uhpApp.controller('ServiceCtrl',['$scope','$http',function($scope,$http){
 	$scope.addConfVar=function(){
 		$scope.nowConfVar=null;
 		$scope.nowConfVar={"group":$scope.nowService};
-		console.log($scope.nowConfVar);
 		$scope.showConfModal();
 	}
 	//修改config
@@ -256,7 +266,6 @@ uhpApp.controller('ServiceCtrl',['$scope','$http',function($scope,$http){
 		for(var key in oneConfVar){
 			$scope.nowConfVar[key]=oneConfVar[key];
 		}
-		console.log($scope.nowConfVar);
 		$scope.showConfModal();
 	}
 	$scope.showConfModal=function(){
@@ -276,7 +285,6 @@ uhpApp.controller('ServiceCtrl',['$scope','$http',function($scope,$http){
 	        		"text" : $scope.nowConfVar.text
 	        	}
 	    }).success(function(response, status, headers, config){
-	        console.log("save confvar from http");
 	        if(response["ret"]!="ok"){
 	        	alert("提交失败:"+response["msg"]);
 	        }
@@ -290,6 +298,8 @@ uhpApp.controller('ServiceCtrl',['$scope','$http',function($scope,$http){
 
 uhpApp.controller('HostsCtrl',['$scope','$rootScope','$http',function($scope,$rootScope,$http){
 	//tab操作和跳转
+	$rootScope.menu="admin";
+	$rootScope.submenu="host";	
 	$scope.tab="host";
 	$scope.tabClass=function(tabName,suffix){
 		if(suffix==null) suffix="";
@@ -303,7 +313,6 @@ uhpApp.controller('HostsCtrl',['$scope','$rootScope','$http',function($scope,$ro
 	        url: '/statics/static_data/hosts.json',
 	    }).success(function(response, status, headers, config){
 	        $scope.hosts = response['hosts'];
-	        console.log($scope.hosts);
 	        $scope.roles = response['roles'];
 	        $scope.groups = response['groups'];
 	        $scope.initHostRole() 
@@ -354,7 +363,6 @@ uhpApp.controller('HostsCtrl',['$scope','$rootScope','$http',function($scope,$ro
 			}
 		}
 		$scope.hostRoleMap = map;
-		console.log($scope.hostRoleMap);
 	}
 	//hostRoleMap
 	$scope.filterHostBySearch=function(hosts,search){

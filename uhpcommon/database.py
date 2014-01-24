@@ -8,6 +8,8 @@ Base = declarative_base()
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import sessionmaker
 from model.user import User
+from model.task import Task
+from model.instance import Instance
 import sqlite3
 
 import os  
@@ -31,11 +33,14 @@ def getCursor():
 def createDB():
     engine = getEngine()
     User.metadata.create_all(engine) 
-
+    Task.metadata.create_all(engine)
+    Instance.metadata.create_all(engine)
     
 def dropDB():
     engine = getEngine()
     User.metadata.drop_all(engine)
+    Task.metadata.drop_all(engine)
+    Instance.metadata.drop_all(engine)
     
 def createIndex():
     conn = sqlite3.connect(connection) 
@@ -54,10 +59,31 @@ def insertUser(name,passwd,email):
     user=User(name,passwd,email)
     session.merge(user)
     session.commit()
+    
+def insertInstance(service,host,role):
+    session=getSession()
+    instance=Instance(service,host,role)
+    session.merge(instance)
+    session.commit()
 
 if __name__ == "__main__":
-    #dropDB()
-    #createDB()
+    dropDB()
+    createDB()
     #showAll()
     insertUser("qus","123456","qiujw@ucweb.com")
+    insertUser("qus2","123456","qiujw@ucweb.com")
+    insertInstance("zookeeper","hadoop3","zookeeper")
+    insertInstance("zookeeper","hadoop4","zookeeper")
+    insertInstance("zookeeper","hadoop5","zookeeper")
+    insertInstance("hdfs","hadoop2","namenode")
+    insertInstance("hdfs","hadoop4","namenode")
+    insertInstance("hdfs","hadoop2","datanode")
+    insertInstance("hdfs","hadoop3","datanode")
+    insertInstance("hdfs","hadoop4","datanode")
+    insertInstance("hdfs","hadoop5","datanode")
+    insertInstance("yarn","hadoop2","resourcemanager")
+    insertInstance("yarn","hadoop2","nodemanager")
+    insertInstance("yarn","hadoop3","nodemanager")
+    insertInstance("yarn","hadoop4","nodemanager")
+    insertInstance("yarn","hadoop5","nodemanager")
 
