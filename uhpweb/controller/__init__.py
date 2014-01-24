@@ -26,6 +26,7 @@ class BaseHandler(tornado.web.RequestHandler):
         user = self.get_secure_cookie("user")
         if not user: return None
         return  tornado.escape.json_decode(user)
+    
     def set_current_user(self, user):
         if user:
             self.set_secure_cookie("user", tornado.escape.json_encode(user))

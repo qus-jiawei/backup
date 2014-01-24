@@ -78,7 +78,7 @@
         <text>dfs_datanode_data_dir</text>
       </controlProperties>
     </control>
-    <control controlID="22" controlTypeID="com.balsamiq.mockups::ComboBox" x="401" y="113" w="120" h="-1" measuredW="67" measuredH="156" zOrder="16" locked="false" isInGroup="-1">
+    <control controlID="22" controlTypeID="com.balsamiq.mockups::ComboBox" x="361" y="114" w="120" h="-1" measuredW="67" measuredH="156" zOrder="16" locked="false" isInGroup="-1">
       <controlProperties>
         <text>Group%0A%09All%0A%09Datanode_g1%0A%09Datanode_g2%0AHost%0A%09hadoop1%0A%09hadoop2%0A%09hadoop3</text>
       </controlProperties>
@@ -118,7 +118,7 @@
         <text>%u53EF%u4EE5%u9009%u62E9%u7EC4%u6216%u8005%u5355%u4E2A%u673A%u5668%u8BBE%u7F6E%u53D8%u91CF%u3002%u8FD9%u4E9B%u53D8%u91CF%u6700%u7EC8%u4F1A%u6CE8%u5165%u5230%u914D%u7F6E%u6A21%u677F%u6587%u4EF6%u4E2D%u3002</text>
       </controlProperties>
     </control>
-    <control controlID="34" controlTypeID="com.balsamiq.mockups::Arrow" x="66" y="38" w="408" h="85" measuredW="150" measuredH="100" zOrder="24" locked="false" isInGroup="-1">
+    <control controlID="34" controlTypeID="com.balsamiq.mockups::Arrow" x="75" y="31" w="408" h="85" measuredW="150" measuredH="100" zOrder="24" locked="false" isInGroup="-1">
       <controlProperties>
         <text/>
       </controlProperties>

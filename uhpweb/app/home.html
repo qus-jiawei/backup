@@ -21,22 +21,20 @@
 				<div class="navbar" >
 					<div class="navbar-inner">
 						<ul class="nav" >
-							<li ng-repeat="menu in menus">
+							<li class="[[isActiveMenu(menu.name)]]" ng-repeat="menu in menus" >
 								<a href="[[menu.herf]]">[[menu.name]]</a>
 							</li>
 						</ul>
 						<div class="pull-right">
 							<label class="hor">[[user.name]]</label>
-							<button class="btn" type="button">登出</button>
+							<button class="btn" type="button"><a href="/logout">登出</a></button>
 						</div>
 					</div>
 				</div>
 				
 				<div class="btn-group">
-					<button class="btn btn-large" ng-repeat="submenu in submenus" >
-						<a href="[[submenu.href]]">
-							[[submenu.name]]
-						</a>
+					<button class="btn btn-large [[isActiveSubmenu(submenu.name)]]" ng-repeat="submenu in submenus" ng-click="jump(submenu.href)" >
+						[[submenu.display]]
 					</button>
 				</div>
 				

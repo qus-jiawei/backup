@@ -1,0 +1,7 @@
+{
+"services":[
+	{"name":"zookeeper","actions":["start","stop","restart"],"instanceActions":["start","stop","restart"]},
+	{"name":"hdfs","actions":["start","stop","restart","rollrestart"],"instanceActions":["start","stop","restart"]},
+	{"name":"yarn","actions":["start","stop","restart","rollrestart"],"instanceActions":["start","stop","restart"]}
+	]
+}

@@ -21,10 +21,9 @@
 	            </div>
 	            <div class="modal-body">
 	                <p>
-	                   	确定要对[[getActionObject]]执行 [[todoAction]] 操作吗？
+	                   	确定要对[[getActionObject()]]执行 [[todoAction]] 操作吗？
 	                </p>
-	                <p>[[instanceList()]]</p>
-	                
+	                <p>[[getInstanceList()]]</p>
 	            </div>
 	            <div class="modal-footer">
 	                <button type="button" class="btn" data-dismiss="modal">取消</button>
@@ -72,6 +71,8 @@
 				            <th>机器</th>
 				            <th>机架</th>
 				            <th>状态</th>
+				            <th>健康</th>
+				            <th>启动时间</th>
 				        </tr>
 				    </thead>
 				    <tbody>
@@ -84,6 +85,8 @@
 				            <td>[[instance.host]]</td>
 				            <td>[[instance.rack]]</td>
 				            <td>[[instance.status]]</td>
+				            <td>[[instance.health]]</td>
+				            <td>[[instance.uptime]]</td>
 				        </tr>
 				    </tbody>
 				</table>	
