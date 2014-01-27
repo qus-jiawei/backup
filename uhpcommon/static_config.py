@@ -16,14 +16,19 @@ adminmenus = [
 usermenus = []
 
 
+#由于基本不修改，所以不存放在数据库
+#保存了所有的素服和角色
 services = [
     {"name":"zookeeper", 
+     "role": [ "zookeeper"],
      "actions":["start", "stop", "restart"], 
      "instanceActions":["start", "stop", "restart"]},
     {"name":"hdfs", 
+     "role": ["namenode","datanode"],
      "actions":["start", "stop", "restart", "rollrestart"], 
      "instanceActions":["start", "stop", "restart"]},
     {"name":"yarn", 
+     "role": ["resourcemanager","nodemanager"],
      "actions":["start", "stop", "restart", "rollrestart"], 
      "instanceActions":["start", "stop", "restart"]}
     ]

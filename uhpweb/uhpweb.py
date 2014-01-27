@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: UTF-8 -*-
+# coding:utf-8
 import os.path, logging, sys
 # homedir=os.path.join( os.getenv('UHP_HOME'),"uhpcommon");
 homedir="D:\github\uhp\uhpcommon"

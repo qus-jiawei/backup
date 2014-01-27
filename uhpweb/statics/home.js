@@ -53,23 +53,35 @@ uhpApp.controller('NarCtrl',['$scope','$rootScope','$interval','$http',function(
 	        $scope.status = status;
 	    });
 	//轮询指定的执行任务，获取进度。在任务地方想调用进度条。
-	//可以设置$rootScope的runningid然后调用$rootScope.beginProgress即可
-	$rootScope.beginProgress=function(){
-		if( $rootScope.runningId==null){
-			//console.log("running id is undefine");
-			return ;
-		}
+	//调用$rootScope.beginProgress即可传入任务id的数组
+	$rootScope.beginProgress=function(id,callback){
+		$rootScope.runningId = id;
 		$("#progressModal").modal({});
 		$rootScope.progress=0;
+		$rootScope.progressMessage="";
+		$rootScope.progressCallback=callback;
 		$rootScope.close=false;
 		$rootScope.updateProgress();
 		$rootScope.success=false;
 		stop = $interval($rootScope.updateProgress, 1000);
-		
 	}
 	$rootScope.updateProgress=function(){
 		if( $rootScope.close ) return;
-		$rootScope.progress += 10;
+		console.log(angular.toJson($rootScope.runningId))
+		$http({
+	        method: 'GET',
+	        url: '/back/query_progress',
+	        params:  { "id" : angular.toJson($rootScope.runningId) }
+	    }).success(function(response, status, headers, config){
+	    	if( $rootScope.progress != response['progress'] ){
+	    		$rootScope.progress = response['progress'];
+	    		$rootScope.progressMessage += response['progressMsg'];
+	    	}
+	    }).error(function(data, status) {
+	        alert("get progress error");
+	        $rootScope.closeProgress()
+	    });
+		
 		if( $rootScope.progress == 100 ){
 			$rootScope.successProgress();
 		}
@@ -80,6 +92,9 @@ uhpApp.controller('NarCtrl',['$scope','$rootScope','$interval','$http',function(
 	      stop = undefined;
 	    }
 		$rootScope.success=true;
+		if( $rootScope.progressCallback !=null ){
+			$rootScope.progressCallback();
+		}
 	}
 	$rootScope.closeProgress=function(){
 		if (angular.isDefined(stop)) {
@@ -114,10 +129,35 @@ uhpApp.controller('ServiceCtrl',['$scope','$rootScope','$http',function($scope,$
 	    }).error(function(data, status) {
 	        $scope.status = status;
 	    });
+	//初始化组列表
+	 $http({
+	        method: 'GET',
+	        url: '/back/group_host_list'
+	    }).success(function(response, status, headers, config){
+	    	$scope.groups = [];
+	    	angular.forEach(response["groups"], function(value, key) {
+	    		$scope.groups.push(value.name);
+		    });
+	    	$scope.hosts = [];
+	    	angular.forEach(response["hosts"], function(value, key) {
+	    		$scope.hosts.push(value.name);
+		    });
+	    	$scope.nowGroup = $scope.groups[0];
+	    	$scope.nowHost = $scope.hosts[0];
+	    	$scope.showType = "group";
+	    }).error(function(data, status) {
+	        $scope.status = status;
+	    });
 	 
 	 
 	$scope.$watch("nowService",function(newValue, oldValue) {
 		$scope.updateNowService();
+	}) ;
+	$scope.$watch("showType",function(newValue,oldValue){
+		$scope.initConf();
+	});
+	$scope.$watch("nowGroup",function(newValue, oldValue) {
+		$scope.initConf();
 	}) ;
 	
 	//修改或者选择service的初始化
@@ -134,8 +174,6 @@ uhpApp.controller('ServiceCtrl',['$scope','$rootScope','$http',function($scope,$
 		$scope.initInstance();
 		//初始化confvar
 		$scope.initConf();
-
-		$scope.chosenAll=false;
 		$scope.chosenInstance={};
 	}
 	
@@ -159,25 +197,29 @@ uhpApp.controller('ServiceCtrl',['$scope','$rootScope','$http',function($scope,$
 	}
 	
 	$scope.initConf=function(){
+		if( $scope.nowService == null || $scope.nowGroup == null || $scope.showType == null ){
+			return;
+		}
 		$http({
 	        method: 'GET',
-	        url: '/statics/static_data/conf_var.json',
-	        params:  { "service" : $scope.nowService }
+	        url: '/back/conf_var',
+	        params:  { 
+	        	"service" : $scope.nowService ,
+	        	"group": $scope.nowGroup,
+	        	"showType" : $scope.showType,
+	        }
 	    }).success(function(response, status, headers, config){
 	        $scope.confVar=response["conf"];
+	        //将所有的list的逗号转换为\n
+	        angular.forEach($scope.confVar, function(value, key) {
+		        if( value.type=="list" ) {
+		        	value.value = value.value.replace(new RegExp(",","gm"),"\n");
+		        }
+		    });
 	    }).error(function(data, status) {
 	    	alert("init service_info error");
 	    });
 	}
-	
-	$scope.$watch("chosenAll",function(newValue, oldValue) {
-		if($scope.instances!=null){
-			var size = $scope.instances.length;
-			for( var index=0;index<size;index++){
-				$scope.chosenInstance[index]=newValue;
-			}
-		}
-	}) ;
 	
 	$scope.serviceClass=function(serviceName){
 		if($scope.nowService==serviceName) return "active";
@@ -201,12 +243,11 @@ uhpApp.controller('ServiceCtrl',['$scope','$rootScope','$http',function($scope,$
 			for( var index in $scope.instances){
 				if( $scope.chosenInstance[index] ){
 					if(first)first=false;
-					else list+=",";
-					list+=$scope.instances[index].name;
+					else list+="\n";
+					list+=$scope.instances[index].host+"-"+$scope.instances[index].role;
 				}
 			}
 		}
-		console.log(list)
 		return list;
 	}
 	//提交action
@@ -215,20 +256,19 @@ uhpApp.controller('ServiceCtrl',['$scope','$rootScope','$http',function($scope,$
 			return $scope.nowService;
 		}
 		else{
-			console.log("into actionobject")
 			return "以下机器";
 		}
 	}
 	$scope.readySendServiceAction=function(action){
 		$scope.todoAction = action;
 		$scope.actionType = "service";
-		$scope.InstanceList = "";
+		$scope.instanceList = "";
 		$("#serviceActionModal").modal({});
 	}
 	$scope.readySendInstanceAction=function(action){
 		$scope.todoAction = action;
 		$scope.actionType = "instance";
-		$scope.InstanceList = $scope.getInstanceList();
+		$scope.instanceList = $scope.getInstanceList();
 		if( $scope.InstanceList == "" ){
 			alert("请选择实例");
 		}
@@ -239,12 +279,13 @@ uhpApp.controller('ServiceCtrl',['$scope','$rootScope','$http',function($scope,$
 	$scope.sendAction=function(action){
 		$http({
 	        method: 'GET',
-	        url: '/statics/static_data/send_action.json',
+	        url: '/back/send_action',
 	        params:  
 	        	{
 	        		"service" : $scope.nowService,
-	        		"type" : $scope.actionType,
-	        		"instances" : $scope.InstanceList
+	        		"taskName" : $scope.todoAction,
+	        		"actionType" : $scope.actionType,
+	        		"instances" : $scope.instanceList.replace(new RegExp("\n","gm"),",")
 	        	}
 	    }).success(function(response, status, headers, config){
 	        if(response["ret"]!="ok"){
@@ -254,10 +295,23 @@ uhpApp.controller('ServiceCtrl',['$scope','$rootScope','$http',function($scope,$
 	    	alert("发送请求失败");
 	    });
 	}
+	//展示conf
+	$scope.showConfTitle=function(){
+		if($scope.showType=="group"){
+			return "配置组";
+		}
+		else{
+			return "机器名称";
+		}
+	}
 	//添加config
 	$scope.addConfVar=function(){
-		$scope.nowConfVar=null;
-		$scope.nowConfVar={"group":$scope.nowService};
+		if($scope.showType=="group"){
+			$scope.nowConfVar={"service":$scope.nowService,"group": $scope.nowGroup,"type":"string"};
+		}
+		else{
+			$scope.nowConfVar={"service":$scope.nowService,"type":"string"};
+		}
 		$scope.showConfModal();
 	}
 	//修改config
@@ -266,32 +320,45 @@ uhpApp.controller('ServiceCtrl',['$scope','$rootScope','$http',function($scope,$
 		for(var key in oneConfVar){
 			$scope.nowConfVar[key]=oneConfVar[key];
 		}
+		$scope.nowConfVar["host"] = oneConfVar['group']
+		$scope.nowConfVar["service"] = $scope.nowService
+		$scope.nowConfVar["del"] = true;
 		$scope.showConfModal();
 	}
 	$scope.showConfModal=function(){
 		$("#serviceConfModal").modal({});
 	}
-	//保存conf
-	$scope.saveConf=function(){
+	//保存修改删除conf
+	$scope.saveConf=function(del){
+		if( $scope.nowConfVar.type == "list"){
+			$scope.nowConfVar.value = $scope.nowConfVar.value.replace(new RegExp("\n","gm"),",");
+		}
 		$http({
 	        method: 'GET',
-	        url: '/statics/static_data/save_confvar.json',
+	        url: '/back/save_confvar',
 	        params:  
 	        	{
+	        		"service" : $scope.nowService,
+	        		"showType" : $scope.showType,
 	        		"group" : $scope.nowConfVar.group,
+	        		"host" : $scope.nowConfVar.host,
 	        		"name" : $scope.nowConfVar.name,
 	        		"value" : $scope.nowConfVar.value,
 	        		"type" : $scope.nowConfVar.type,
-	        		"text" : $scope.nowConfVar.text
+	        		"text" : $scope.nowConfVar.text,
+	        		"del" : del
 	        	}
 	    }).success(function(response, status, headers, config){
-	        if(response["ret"]!="ok"){
+	        if(response["ret"]=="ok"){
+	        	$scope.initConf();
+	        }
+	        else{
 	        	alert("提交失败:"+response["msg"]);
 	        }
+	        
 	    }).error(function(data, status) {
 	    	alert("发送请求失败");
 	    });
-		$scope.initConf();
 	}
 }])
 
@@ -300,6 +367,12 @@ uhpApp.controller('HostsCtrl',['$scope','$rootScope','$http',function($scope,$ro
 	//tab操作和跳转
 	$rootScope.menu="admin";
 	$rootScope.submenu="host";	
+	//初始化各种数据
+	$scope.$watch('tab',function(newValue,oldValue){
+		if(newValue=="host")$scope.initHost();
+		if(newValue=="role")$scope.initRole();
+		if(newValue=="group")$scope.initGroup();
+	});
 	$scope.tab="host";
 	$scope.tabClass=function(tabName,suffix){
 		if(suffix==null) suffix="";
@@ -308,18 +381,69 @@ uhpApp.controller('HostsCtrl',['$scope','$rootScope','$http',function($scope,$ro
 	}
 	//初始化机器和角色的对应关系
 	$scope.initHost=function(){
+		console.log("init host")
 		$http({
 	        method: 'GET',
-	        url: '/statics/static_data/hosts.json',
+	        url: '/back/hosts',
 	    }).success(function(response, status, headers, config){
-	        $scope.hosts = response['hosts'];
-	        $scope.roles = response['roles'];
-	        $scope.groups = response['groups'];
-	        $scope.initHostRole() 
+	    	$scope.hosts = response['hosts'];
 	    }).error(function(data, status) {
-	    	alert("发送请求失败");
+	    	alert("发送hosts请求失败");
+	    });
+		$scope.chosenHost={}
+	}
+	$scope.initRole=function(){
+		$http({
+	        method: 'GET',
+	        url: '/statics/static_data/hostrole.json',
+	    }).success(function(response, status, headers, config){
+	    	$scope.roles = response['roles'];
+	    	$scope.hostroles = response['hostroles']
+	    	$scope.initHostRole()
+	    }).error(function(data, status) {
+	    	alert("发送initrole请求失败");
 	    });
 	}
+	//通过hostroles保存的真实的关系初始化hostRoleMap的对应关系
+	$scope.initHostRole=function(){
+		var map={};
+		for(var host in $scope.hostroles){
+			map[host]={};
+			var roleList = $scope.hostroles[host]['role']
+			for(var index in $scope.roles ){
+				var role = $scope.roles [index];
+				if( inArray(roleList,role) ) map[host][role]=true;
+				else map[host][role]=false;
+			}
+		}
+		$scope.hostRoleMap = map;
+	}
+	$scope.initGroup=function(){
+		$http({
+	        method: 'GET',
+	        url: '/statics/static_data/hostgroup.json',
+	    }).success(function(response, status, headers, config){
+	    	$scope.groups = response['groups'];
+	    	$scope.hostgroups = response['hostgroups']
+	    	$scope.initHostGroup();
+	    }).error(function(data, status) {
+	    	alert("发送initgroup请求失败");
+	    });
+	}
+	$scope.initHostGroup=function(){
+		var map={};
+		for(var host in $scope.hostgroups){
+			map[host]={};
+			var groupList = $scope.hostgroups[host]['group']
+			for(var index in $scope.groups ){
+				var group = $scope.groups [index];
+				if( inArray(groupList,group) ) map[host][group]=true;
+				else map[host][group]=false;
+			}
+		}
+		$scope.hostGroupMap = map;
+	}
+	
 	$scope.filterHostBySearchInfo=function(hosts,search){
 		if(search==null||search=="") return hosts;
 		var ret={};
@@ -330,41 +454,67 @@ uhpApp.controller('HostsCtrl',['$scope','$rootScope','$http',function($scope,$ro
 	    });
 		return ret;
 	}
-	//
+	//添加删除机器
 	$scope.readyAddHost=function(){
+		$scope.nowHost = {}
+		$scope.nowHost.port = 22
 		$("#hostNewHostModal").modal({});
 	}
 	$scope.addHost=function(){
-		var runningId = null;
+		if( $scope.nowHost.hosts==null || $scope.nowHost.user==null ||
+				$scope.nowHost.port==null || $scope.nowHost.passwd==null){
+			alert("参数非法");
+			return;
+		}
 		$http({
-	        method: 'GET',
-	        url: '/statics/static_data/add_host.json'
+	        method: 'POST',
+	        url: '/back/add_host',
+	        params:{
+	        	"hosts": $scope.nowHost.hosts.replace(new RegExp("\n","gm"),","),
+	        	"user": $scope.nowHost.user,
+	        	"port": $scope.nowHost.port,
+	        	"passwd": $scope.nowHost.passwd,
+	        	"sudopasswd":$scope.nowHost.sudopasswd
+	        }
 	    }).success(function(response, status, headers, config){
 	    	if(response["ret"]!="ok"){
 	        	alert("提交失败:"+response["msg"]);
 	        }
-	    	$rootScope.runningId=response["runningId"];
-	    	$rootScope.beginProgress();
+	    	else{
+	    		$rootScope.beginProgress(response["runningId"],$scope.initHost);
+	    	}
 	    }).error(function(data, status) {
 	    	alert("发送请求失败");
 	    });
 	}
-	$scope.initHost();
-	//通过hosts保存的真实的关系初始化hostRoleMap的对应关系
-	$scope.initHostRole=function(){
-		var map={};
-		for(var host in $scope.hosts){
-			map[host]={};
-			var roleList = $scope.hosts[host]['role']
-			for(var index in $scope.roles ){
-				var role = $scope.roles [index];
-				if( inArray(roleList,role) ) map[host][role]=true;
-				else map[host][role]=false;
-			}
-		}
-		$scope.hostRoleMap = map;
+	$scope.readyDelHost=function(){
+		$("#hostDelHostModal").modal({});
+		$scope.chosenHost=$scope.getChosenHost();
 	}
-	//hostRoleMap
+	$scope.getChosenHost=function(){
+		ret=[];
+		for(var host in $scope.chosenHost){
+			if( $scope.chosenHost[host]) ret.push(host);
+		}
+		return ret.join(",");
+	}
+	$scope.delHost=function(){
+		$http({
+	        method: 'GET',
+	        url: '/back/del_host',
+	        params:{
+	        	"hosts": $scope.chosenHost
+	        }
+	    }).success(function(response, status, headers, config){
+	    	if(response["ret"]!="ok"){
+	        	alert("提交失败:"+response["msg"]);
+	        }
+	    }).error(function(data, status) {
+	    	alert("发送请求失败");
+	    });
+		$scope.initHost()
+	}
+	//角色相关的函数
 	$scope.filterHostBySearch=function(hosts,search){
 		if(search==null||search=="") return hosts;
 		var ret={};
@@ -378,8 +528,8 @@ uhpApp.controller('HostsCtrl',['$scope','$rootScope','$http',function($scope,$ro
 	$scope.readySetupService=function(){
 		var del=[];
 		var add=[];
-		for(var host in $scope.hosts){
-			var roleList = $scope.hosts[host]['role']
+		for(var host in $scope.hostroles){
+			var roleList = $scope.hostroles[host]['role']
 			for(var index in $scope.roles ){
 				var role = $scope.roles [index];
 				var oldRea = inArray(roleList,role);
@@ -409,13 +559,109 @@ uhpApp.controller('HostsCtrl',['$scope','$rootScope','$http',function($scope,$ro
 	    	if(response["ret"]!="ok"){
 	        	alert("提交失败:"+response["msg"]);
 	        }
-	    	$rootScope.runningId=response["runningId"];
-	    	$rootScope.beginProgress();
+	    	$rootScope.beginProgress(response["runningId"],$scope.initRole);
 	    }).error(function(data, status) {
 	    	alert("发送请求失败");
 	    });
 	}
-
-	
+	//组相关的函数
+	$scope.readySetupGroup=function(){
+		var del=[];
+		var add=[];
+		console.log("ready group")
+		console.log($scope.hostgroups)
+		console.log($scope.groups)
+		
+		for(var host in $scope.hostgroups){
+			var groupList = $scope.hostgroups[host]['group']
+			for(var index in $scope.groups ){
+				var group = $scope.groups [index];
+				var oldRea = inArray(groupList,group);
+				var newRea = $scope.hostGroupMap[host][group];
+				if( oldRea && !newRea ){
+					console.log(host+" "+group)
+					del.push({"host":host,"group":group});
+				}
+				if( !oldRea && newRea ){
+					console.log(host+" "+group)
+					add.push({"host":host,"group":group});
+				}
+			}
+		}
+		$scope.addGroup=add;
+		
+		$scope.delGroup=del;
+		$("#hostNewGroupModal").modal({});
+	}
+	$scope.setupGroup=function(){
+		$http({
+	        method: 'GET',
+	        url: '/statics/static_data/setup_group.json',
+	        params:  
+        	{
+        		"add" : angular.toJson($scope.addGroup),
+        		"del" : angular.toJson($scope.delGroup)
+        	}
+	    }).success(function(response, status, headers, config){
+	    	if(response["ret"]!="ok"){
+	        	alert("提交失败:"+response["msg"]);
+	        }
+	    }).error(function(data, status) {
+	    	alert("发送请求失败");
+	    });
+		$scope.initGroup()
+	}
 }])
 
+
+uhpApp.controller('TaskCtrl',['$scope','$rootScope','$http',function($scope,$rootScope,$http){
+	$scope.columns=[{"name":"id","display":"id"},{"name":"sumbitTime","display":"提交时间"},
+	                ];
+	console.log($scope.columns);
+	$scope.orderbyField = "id";
+	$scope.orderDir = "desc";
+	$scope.getIconClass=function(name){
+		if( $scope.orderbyField == name){
+			if( $scope.orderDir=="asc" ){
+				return "icon-arrow-up";
+			}
+			else{
+				return "icon-arrow-down";
+			}
+		}
+		else return "";
+	}
+	$scope.changeOrderBy=function(name){
+		if( $scope.orderbyField == name){
+			if( $scope.orderDir =="asc" ){
+				$scope.orderDir = "desc";
+			}
+			else{
+				$scope.orderDir = "asc";
+			}
+		}
+		else{
+			$scope.orderbyField = name;
+		}
+		$scope.query();
+	}
+	$scope.query=function(){
+		taskSearchText
+		$http({
+	        method: 'GET',
+	        url: '/statics/static_data/tasks.json',
+	        params:  
+        	{
+        		"search" : $scope.taskSearchText,
+        		"orderby" : angular.toJson($scope.delService)
+        	}
+	    }).success(function(response, status, headers, config){
+	    	if(response["ret"]!="ok"){
+	        	alert("提交失败:"+response["msg"]);
+	        }
+	    	$rootScope.beginProgress(response["runningId"],$scope.initRole);
+	    }).error(function(data, status) {
+	    	alert("发送请求失败");
+	    });
+	}
+}]);

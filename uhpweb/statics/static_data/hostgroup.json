@@ -1,0 +1,10 @@
+{
+"groups":["datanode_1","datanode_2"],
+"hostgroups":{
+	"hadoop1":{"group":[]},
+	"hadoop2":{"group":["datanode_1"]},
+	"hadoop3":{"group":["datanode_1"]},
+	"hadoop4":{"group":["datanode_2"]},
+	"hadoop5":{"group":["datanode_2"]}
+}
+}

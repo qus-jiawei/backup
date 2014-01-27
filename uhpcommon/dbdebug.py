@@ -1,14 +1,20 @@
 import database
 import json
 from model.instance import Instance
+from model.task import Task
 from sqlalchemy.orm import query,aliased
 
-def getInstanceFromService():
+def getdb():
     session=database.getSession()
-    instances = session.query(Instance).filter(Instance.service == "zookeeper" )
-    for instance in instances:
-        print instance.service
-    print instances
+    task = Task("1","2","3")
+    session.add(task)
+    session.flush()
+    print task.id
+    session.commit()
+    objects = session.query(Task)
+    for object in objects:
+        print object.id,object.task
+    print objects
     
     
-getInstanceFromService()
+getdb()

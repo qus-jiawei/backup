@@ -1,11 +1,27 @@
 <div  ng-controller="TaskCtrl">
 	<h3>任务查询</h3>
 	<div>
-		<input>
-	</div>
-	<div>
-		<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="example">
-			
+		<input type="text" ng-model="taskSearchText" style="margin-bottom:20px;">
+		<button type="button" class="btn" style="margin-bottom:20px;" ng-click="query()">查询</button>
+		<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="task-table">
+			<thead>
+		        <tr>
+		            <th ng-repeat="column in columns" ng-click="changeOrderBy(column.name)">
+		            [[column.display]] <i class="[[getIconClass(column.name)]]"></i></th>
+		        </tr>
+		    </thead>
+		    <tbody>
+		        <tr ng-repeat="task in tasks">
+		            <td>id</td>
+		            <th>提交时间</th>
+		            <td>任务类型</td>
+		            <td>服务或角色</td>
+		            <td>机器</td>
+		            <td>任务状态</td>
+		            <td>任务结果</td>
+		            <td>相关日志</td>
+		        </tr>
+		    </tbody>	
 		</table>
 	</div>
 </div>

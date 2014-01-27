@@ -4,6 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import ForeignKey, DateTime, Boolean, func
 from sqlalchemy.orm import relationship, backref
 from models import UHPBase
+import json
 
 BASE = declarative_base()
 
@@ -25,7 +26,7 @@ class Task(BASE, UHPBase):
     id= Column(Integer, primary_key=True)
     #任务类型   1:ansible 2:shell
     taskType = Column(SmallInteger, nullable=False)
-    #任务对象  格式为 group:DATANODE 或者 host:hadoop1
+    #任务对象  格式为 json {service:xxxx} {group:xxxx,role:xxx} {host:xxxx,role:xxx}
     object = Column(String(64), nullable=False)
     #任务名称 start stop restart ...
     task = Column(String(30), nullable=False)
@@ -38,10 +39,11 @@ class Task(BASE, UHPBase):
     #附加信息 填写运行失败的时候的错误提示
     msg = Column(Text)
 
-    def __init__(self, type, object, task):
-        self.type = type
+    def __init__(self, taskType, object, task, params = "{}"):
+        self.taskType = taskType
         self.object = object
         self.task = task
+        self.params = params
         self.status = STATUS_INIT
         self.result = RESULT_UNFINISH
         

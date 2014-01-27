@@ -23,7 +23,7 @@
 	                <p>
 	                   	确定要对[[getActionObject()]]执行 [[todoAction]] 操作吗？
 	                </p>
-	                <p>[[getInstanceList()]]</p>
+	                <pre ng-show="actionType=='instance'">[[instanceList]]</pre>
 	            </div>
 	            <div class="modal-footer">
 	                <button type="button" class="btn" data-dismiss="modal">取消</button>
@@ -35,7 +35,7 @@
 			  <li class="[[tabClass('info')]]"><a ng-click="tab='info'" >服务概况</a></li>
 			  <li class="[[tabClass('instance')]]"><a ng-click="tab='instance'">运行实例</a></li>
 			  <li class="[[tabClass('confvar')]]"><a ng-click="tab='confvar'">配置变量</a></li>
-			  <li class="[[tabClass('conftem')]]"><a  ng-click="tab='conftem'">配置模板</a></li>
+			  <!-- <li class="[[tabClass('conftem')]]"><a  ng-click="tab='conftem'">配置模板</a></li>  -->
 			</ul>
 			 
 			<div class="tab-content">
@@ -59,12 +59,13 @@
 					</ul>
 				</div>
 				<!-- 列表 -->
-			  	<input type="text" ng-model="instanceSearchText" style="margin-bottom:20px;">
+			  	<input type="text" ng-model="instanceSearchText" ng-change="chosenInstance={}" style="margin-bottom:20px;">
 			  	<table id="table_id" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" >
 				    <thead>
 				        <tr>
 				            <th>
-				            	<input type="checkbox" ng-model="chosenAll" title="select all" >
+				            <!-- 使用ng-check -->
+				            	<input type="checkbox" ng-model="chosenAll"  >
 				            </th>
 				            <th>名称</th>
 				            <th>角色</th>
@@ -78,7 +79,7 @@
 				    <tbody>
 				        <tr ng-repeat="instance in instances|filter:instanceSearchText">
 				            <td>
-				          		<input type="checkbox" ng-model="chosenInstance[$index]" >
+				          		<input type="checkbox" ng-model="chosenInstance[$index]" ng-checked='chosenAll' >
 				            </td>
 				            <td>[[instance.name]]</td>
 				            <td>[[instance.role]]</td>
@@ -103,38 +104,54 @@
 			                <h3>修改配置</h3>
 			            </div>
 			            <div class="modal-body">
-			            	<div class="input-prepend">
-				               <span class="add-on">配置组:</span><input type="text" ng-model="nowConfVar.group">
+			            	<div class="input-prepend" style="display:block;">
+				               <span class="add-on">服务:</span><input type="text" ng-model="nowConfVar.service" readonly>
 				            </div>
-				            <div class="input-prepend">
+				            <div class="input-prepend" ng-show="showType=='group'" style="display:block;">
+				               <span class="add-on">配置组:</span><input type="text" ng-model="nowConfVar.group" readonly>
+				            </div>
+			            	<div class="input-prepend" ng-show="showType=='host'" style="display:block;">
+				               <span class="add-on">配置机器:</span>
+				               <select ng-model="nowConfVar.host" ng-options="host for host in hosts" style="margin-bottom:20px;"></select>
+				            </div>
+				            <div class="input-prepend" style="display:block;">
 				               <span class="add-on">配置名称:</span><input type="text" ng-model="nowConfVar.name">
 				            </div>
-				            <div class="input-prepend">
-				               <span class="add-on">值:</span><input type="text" ng-model="nowConfVar.value">
+				            <div class="input-prepend" style="display:block;">
+				               <span class="add-on">值:</span>
+				               <input type="text" ng-show="nowConfVar.type=='string'" ng-model="nowConfVar.value">
+				               <textarea rows="5" ng-show="nowConfVar.type=='list'" ng-model="nowConfVar.value"></textarea>
 				            </div>
-				            <div class="input-prepend">
+				            
+				            <div class="input-prepend" style="display:block;">
 				               	<span class="add-on">类型:</span>
 								<select ng-model="nowConfVar.type">
-								  <option>string</option>
-								  <option>list</option>
+								  <option value="string" >字符串</option>
+								  <option value="list" >数组(请使用换行分割)</option>
 							   	</select>
 				            </div>
-				            <div class="input-prepend">
+				            <div class="input-prepend" style="display:block;">
 				               <span class="add-on">注释:</span><input type="text" ng-model="nowConfVar.text">
 				            </div>
 			            </div>
 			            <div class="modal-footer">
 			                <button type="button" class="btn" data-dismiss="modal">取消</button>
+			                <button type="button" class="btn btn-danger" data-dismiss="modal" ng-click="saveConf('del')" ng-show="nowConfVar.del" >删除</button>
 			                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveConf()" >确定</button>
 			            </div>
 			        </div>
 			  	<!-- 列表 -->
+			  	<select ng-model="showType" style="margin-bottom:20px;">
+			  		<option value="group">组变量</option>
+			  		<option value="host">机器变量</option>
+			  	</select>
+			  	<select ng-show="showType=='group'" ng-model="nowGroup" ng-options="group for group in groups" style="margin-bottom:20px;"></select>
 			  	<input type="text" ng-model="confSearchText" style="margin-bottom:20px;">
 			  	<button  type="button" class="btn" ng-click="addConfVar()" style="margin-bottom:20px;">添加配置项</button>
 			  	<table id="table_id" cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" >
 				    <thead>
 				        <tr>
-				            <th>配置组</th>
+				        	<th>[[showConfTitle(showType)]]</th>
 				            <th>配置名称</th>
 				            <th>配置数值</th>
 				            <th>类型</th>
@@ -145,7 +162,9 @@
 				        <tr ng-dblclick="editConfVar(var)" ng-repeat="var in confVar|filter:confSearchText">
 				            <td>[[var.group]]</td>
 				            <td>[[var.name]]</td>
-				            <td>[[var.value]]</td>
+				            <td>
+				            	<pre>[[var.value]]</pre>
+				            </td>
 				            <td>[[var.type]]</td>
 				            <td>[[var.text]]</td>
 				        </tr>
@@ -154,7 +173,7 @@
 			  	
 			  </div>
 			  
-			  <div class="tab-pane fade [[tabClass('conftem','in')]] " >d</div>
+			  <!-- <div class="tab-pane fade [[tabClass('conftem','in')]] " >d</div>  -->
 			</div>
 			 
 		</div>

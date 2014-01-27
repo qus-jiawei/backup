@@ -14,6 +14,9 @@
 <script type="text/javascript" src="/statics/js/vendor/angular-locale_zh-cn.js"></script>
 <script type="text/javascript" src="/statics/js/vendor/angular-resource.js"></script>
 <script type="text/javascript" src="/statics/js/vendor/bootstrap.js"></script>
+<link rel="apple-touch-ico" href="/statics/img/glyphicons-halflings.png" />
+<link rel="apple-touch-ico" href="/statics/img/glyphicons-halflings-white.png" />
+
 </head>
 <body>
 	<div class="container">
@@ -57,9 +60,12 @@
         	<div class="progress progress-striped active">
 			  <div id="progressbar" class="bar" style="width: [[progress]]%;"></div>
 			</div>
+			<div>
+				<pre>[[progressMessage]]</pre>
+			</div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn" data-dismiss="modal" ng-show="!success">返回</button>
+            <button type="button" class="btn" data-dismiss="modal" ng-show="!success" ng-click="closeProgress()">返回</button>
         	<button type="button" class="btn btn-primary" data-dismiss="modal" ng-show="success">确定</button>
         </div>
     </div>

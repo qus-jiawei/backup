@@ -1,0 +1,10 @@
+{
+"roles":["zookeeper","namenode","datanode","resourcemanager","nodemanager"],
+"hostroles":{
+	"hadoop1":{"role":["client"]},
+	"hadoop2":{"role":["namenode","datanode"]},
+	"hadoop3":{"role":["zookeeper","namenode","datanode"]},
+	"hadoop4":{"role":["zookeeper","namenode","datanode"]},
+	"hadoop5":{"role":["zookeeper","namenode","datanode"]}
+}
+}
